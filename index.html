@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=no">
+<title>Barcelona – ingatlantérkép</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+html,body,#map{height:100%;margin:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+#map{background:#dcecf5}
+.leaflet-popup-content{margin:13px 15px;min-width:220px}
+.name{font-size:17px;font-weight:700;margin-bottom:8px}
+.item{border-top:1px solid #eee;padding-top:8px;margin-top:8px}
+.item b{display:block}
+.item a{color:#1565c0;text-decoration:none}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map=L.map('map',{zoomControl:true}).setView([41.3874,2.1686],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+ maxZoom:19,attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+
+const listings=[
+ {id:'109440457',lat:41.4102622,lon:2.2090496,barri:'Provençals del Poblenou',title:'Calle del Treball, 67 V',size:'430 m²',rent:'4 200 €/hó',deposit:'1 havi kaució',sqm:'9,77 €/m²',url:'https://www.idealista.com/inmueble/109440457/'},
+ {id:'111059305',lat:41.3553244,lon:2.1039505,barri:'L’Hospitalet de Llobregat',title:'Zona del Mig',size:'350 m²',rent:'2 900 €/hó',deposit:'2 havi kaució',sqm:'8,29 €/m²',url:'https://www.idealista.com/inmueble/111059305/'}
+];
+
+fetch('./barris.json').then(r=>r.json()).then(rows=>{
+ const features=rows.map(x=>({type:'Feature',properties:{nom:x.nom},geometry:{type:'Polygon',coordinates:[x.geometry.map(p=>[p[1],p[0]])]}}));
+ const layer=L.geoJSON({type:'FeatureCollection',features},{
+  style:{color:'#e53935',weight:1.5,opacity:.9,fillOpacity:0},
+  onEachFeature:(f,l)=>{
+   const name=f.properties.nom;
+   const found=listings.filter(x=>x.barri.toLowerCase()===name.toLowerCase());
+   let html='<div class="name">'+name+'</div>';
+   if(found.length) found.forEach(x=>html+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><a href="'+x.url+'" target="_blank">Idealista →</a></div>');
+   else html+='<div>Nincs még hozzárendelt ingatlan.</div>';
+   l.bindPopup(html);
+   l.on('mouseover',()=>l.setStyle({weight:3,fillOpacity:.06}));
+   l.on('mouseout',()=>l.setStyle({weight:1.5,fillOpacity:0}));
+  }
+ }).addTo(map);
+ map.fitBounds(layer.getBounds(),{padding:[10,10]});
+}).catch(e=>console.error(e));
+
+listings.forEach(x=>{
+ const marker=L.circleMarker([x.lat,x.lon],{radius:7,color:'#111827',weight:2,fillColor:'#fff',fillOpacity:1});
+ marker.bindPopup('<div class="name">'+x.barri+'</div><b>'+x.title+'</b><br>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><a href="'+x.url+'" target="_blank">Idealista →</a>');
+ marker.addTo(map);
+});
+</script>
+</body>
+</html>
