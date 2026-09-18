@@ -27,7 +27,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 
 const listings=[
  {id:'109440457',lat:41.4102622,lon:2.2090496,barri:'Provençals del Poblenou',title:'Calle del Treball, 67 V',size:'430 m²',rent:'4 200 €/hó',deposit:'1 havi kaució',sqm:'9,77 €/m²',url:'https://www.idealista.com/inmueble/109440457/'},
- {id:'111059305',lat:41.3553244,lon:2.1039505,barri:'L’Hospitalet de Llobregat',title:'Zona del Mig',size:'350 m²',rent:'2 900 €/hó',deposit:'2 havi kaució',sqm:'8,29 €/m²',url:'https://www.idealista.com/inmueble/111059305/'}
+ {id:'111059305',lat:41.3553244,lon:2.1039505,barri:'L’Hospitalet de Llobregat',title:'Zona del Mig',size:'350 m²',rent:'2 900 €/hó',deposit:'2 havi kaució',sqm:'8,29 €/m²',url:'https://www.idealista.com/inmueble/111059305/'},
+ {id:'108885012',lat:41.4184276,lon:2.1828846,barri:'Navas / El Camp de l’Arpa del Clot',title:'Calle de las Navas de Tolosa, 334',size:'453 m²',rent:'1 700 €/hó az 1. évben; 2 100 € a 2. évben; 2 500 € a 3. évtől',deposit:'2 havi kaució',sqm:'5,52 €/m² (listaár alapján)',url:'https://www.idealista.com/inmueble/108885012/'},
+ {id:'112096883',lat:41.3528613,lon:2.1248373,barri:'L’Hospitalet de Llobregat',title:'Calle de les Ciències',size:'500 m²',rent:'4 200 €/hó',deposit:'Nincs megadva a hirdetésben',sqm:'8,40 €/m²',url:'https://www.idealista.com/inmueble/112096883/'},
+ {id:'111622804',lat:41.4397568,lon:2.1773824,barri:'Nou Barris',title:'Calle Font d’en Canyelles',size:'452 m²',rent:'2 000 €/hó',deposit:'Nincs megadva a hirdetésben',sqm:'4,42 €/m²',url:'https://www.idealista.com/inmueble/111622804/'}
 ];
 
 fetch('./barris.json').then(r=>r.json()).then(rows=>{
@@ -36,7 +39,7 @@ fetch('./barris.json').then(r=>r.json()).then(rows=>{
   style:{color:'#e53935',weight:1.5,opacity:.9,fillOpacity:0},
   onEachFeature:(f,l)=>{
    const name=f.properties.nom;
-   const found=listings.filter(x=>x.barri.toLowerCase()===name.toLowerCase());
+   const found=listings.filter(x=>x.barri.toLowerCase()===name.toLowerCase() || (name.toLowerCase().includes('navas') && x.id==='108885012') || (name.toLowerCase().includes('camp de l’arpa') && x.id==='108885012'));
    let html='<div class="name">'+name+'</div>';
    if(found.length) found.forEach(x=>html+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><a href="'+x.url+'" target="_blank">Idealista →</a></div>');
    else html+='<div>Nincs még hozzárendelt ingatlan.</div>';
