@@ -111,46 +111,18 @@ function pointInGeoJSON(point,geometry){
  return false;
 }
 
-const municipalQueryUrl='https://geoportal.amb.cat/geoserveis/rest/services/ADSE/InfoPAE_AUX/MapServer/2/query?where=NOM%20%3C%3E%20%27Barcelona%27&outFields=NOM&returnGeometry=true&outSR=4326&f=geojson';
-
-fetch(municipalQueryUrl)
- .then(r=>r.ok?r.json():Promise.reject(new Error('Municipality query HTTP '+r.status)))
- .then(data=>{
-   if(!data || data.type!=='FeatureCollection') throw new Error('Invalid municipality GeoJSON');
-   const municipalLayer=L.geoJSON(data,{
-     style:{
-       color:'#d63b35',
-       weight:2,
-       opacity:1,
-       fillColor:'#b9dff0',
-       fillOpacity:0.05,
-       fill:true
-     },
-     onEachFeature:(feature,layer)=>{
-       const name=feature.properties?.NOM || 'Közigazgatási egység';
-       if(name==='Barcelona' || !name) return;
-       layer.bindTooltip(name,{
-         permanent:true,
-         direction:'center',
-         className:'barrio-label',
-         opacity:0.9
-       });
-       barrioLabels.push(layer.getTooltip());
-
-       layer.on('click',()=>{
-         const found=listings.filter(x=>pointInGeoJSON([x.lat,x.lon],feature.geometry));
-         let h='<div class="name">'+name+'</div>';
-         if(found.length) found.forEach(x=>h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b style="color:#176b3a">pozitív:</b> '+x.positive+'<br><b style="color:#b42318">negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
-         else h+='<div>Nincs még hozzárendelt ingatlan.</div>';
-         layer.bindPopup(h).openPopup();
-       });
-       layer.on('mouseover',()=>layer.setStyle({weight:3,fillOpacity:0.18}));
-       layer.on('mouseout',()=>layer.setStyle({weight:2,fillOpacity:0.05}));
-     }
-   }).addTo(map);
-   console.log('Municipal boundaries loaded:',data.features.length);
- })
- .catch(e=>console.error('Municipality boundary layer failed:',e));
+// Official AMB municipal interior boundaries, rendered as line-only map layers.
+// The AMB publishes the same municipal boundaries at several scale levels;
+// using the scale-specific line layers keeps the boundaries visible while zooming.
+const municipalBoundaryService='https://geoportal.amb.cat/geoserveisapp/rest/services/Cartografia/topografia_5000_analogic_hibrid_1977_25831/MapServer';
+const municipalBoundaryLayer=L.esri.dynamicMapLayer({
+ url:municipalBoundaryService,
+ layers:[793,827,857,867],
+ opacity:1,
+ format:'png32',
+ transparent:true,
+ f:'image'
+}).addTo(map);
 
 function updateBarrioLabels(){
   const showNames=map.getZoom()>=13.8;
