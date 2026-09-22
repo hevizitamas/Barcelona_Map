@@ -89,15 +89,19 @@ fetch('./barris.json')
      if(f) x.barri=f.properties.nom;
    });
 
+   const canvasRenderer=L.canvas({padding:0.5});
+
    const layer=L.geoJSON(
      {type:'FeatureCollection',features},
      {
+       renderer:canvasRenderer,
        style:f=>({
          color:'#d63b35',
          weight:1.6,
          opacity:.95,
          fillColor:f.properties.color,
-         fillOpacity:.30
+         fillOpacity:.30,
+         fill:true
        }),
        onEachFeature:(f,l)=>{
          const name=f.properties.nom;
