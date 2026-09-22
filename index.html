@@ -135,19 +135,7 @@ function pointInGeoJSON(point,geometry){
 // boundaries do not depend on the AMB ArcGIS image renderer.
 const MUNICIPAL_GEOJSON_URL='./municipis_barcelona.geojson';
 const municipalLabels=[];
-const EXCLUDED_MUNICIPALITIES=new Set([
- 'Abrera','Martorell','Sant Andreu de la Barca','Corbera de Llobregat',
- 'Rubí','Terrassa','Cerdanyola del Vallès','Sant Cugat del Vallès',
- 'Molins de Rei','Sant Feliu de Llobregat','Sant Just Desvern',
- 'Castellbisbal','Castellví de Rosanes',
- 'Pallejà','Cervelló','la Palma de Cervelló',
- 'Sant Vicenç dels Horts','Santa Coloma de Cervelló','Torrelles de Llobregat',
- 'Sant Boi de Llobregat','Gavà','Castelldefels','Viladecans',
- 'Begues','Sant Climent de Llobregat','Vallirana','el Papiol',
- 'Badalona','Tiana','Sant Fost de Campsentelles','Alella',
- 'Montgat','el Masnou','Teià','Premià de Mar','Premià de Dalt','Vilassar de Mar',
- 'Ripollet','Montcada i Reixac'
-]);
+const EXCLUDED_MUNICIPALITIES=new Set();
 const municipalPastels=[
  '#e8a8a8','#a9c9e8','#b8dba5','#d6a9df','#e8ca7f',
  '#a9d8cc','#c0afe4','#e2a8c1','#add294','#e2b18d','#b1c2df'
@@ -189,6 +177,34 @@ fetch(MUNICIPAL_GEOJSON_URL,{mode:'cors',cache:'force-cache'})
      return !EXCLUDED_MUNICIPALITIES.has(n);
    });
    municipalBoundaryLayer.addData(data);
+
+   // A külső települési területek külön, láthatatlan kattintási réteget kapnak.
+   // Barcelona városa szándékosan nincs benne: ott kizárólag az egyes barrio-k kattinthatók,
+   // így nem készül összesített „teljes Barcelona” ingatlanlista.
+   const municipalClickLayer=L.geoJSON(data,{
+     filter:feature=>{
+       const n=feature.properties?.nom||feature.properties?.NOMMUNI||'';
+       return n !== 'Barcelona';
+     },
+     style:()=>({
+       color:'transparent',
+       weight:0,
+       opacity:0,
+       fillColor:'transparent',
+       fillOpacity:0
+     }),
+     onEachFeature:(feature,layer)=>{
+       const name=feature.properties?.nom||feature.properties?.NOMMUNI||'';
+       layer.on('click',()=>{
+         const found=listings.filter(x=>pointInGeoJSON([x.lat,x.lon],feature.geometry));
+         let h='<div class="name">'+name+'</div>';
+         if(found.length) found.forEach(x=>h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b style="color:#176b3a">pozitív:</b> '+x.positive+'<br><b style="color:#b42318">negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
+         else h+='<div>Nincs még hozzárendelt ingatlan.</div>';
+         layer.bindPopup(h).openPopup();
+       });
+     }
+   }).addTo(map);
+
    console.log('ICGC municipal boundaries loaded:',data.features?.length||0);
    updateMunicipalLabels();
  })
