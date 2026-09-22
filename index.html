@@ -10,7 +10,7 @@ html,body,#map{height:100%;margin:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 #map{background:#dcecf5}
 .leaflet-popup-content{margin:13px 15px;min-width:220px}
-.name{font-size:17px;font-weight:700;margin-bottom:8px}
+.name{font-size:14px;font-weight:600;margin-bottom:7px}
 .item{border-top:1px solid #eee;padding-top:8px;margin-top:8px}
 .item b{display:block}
 .item a{color:#1565c0;text-decoration:none}
@@ -90,7 +90,7 @@ rows.forEach((b,i)=>{
  poly.on('click',()=>{
    const found=listings.filter(x=>pointInPolygon([x.lat,x.lon],pts));
    let h='<div class="name">'+b.nom+'</div>';
-   if(found.length) found.forEach(x=>h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b>pozitív:</b> '+x.positive+'<br><b>negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
+   if(found.length) found.forEach(x=>h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b style="color:#176b3a">pozitív:</b> '+x.positive+'<br><b style="color:#b42318">negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
    else h+='<div>Nincs még hozzárendelt ingatlan.</div>';
    poly.bindPopup(h).openPopup();
  });
