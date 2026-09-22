@@ -140,8 +140,8 @@ const EXCLUDED_MUNICIPALITIES=new Set([
  'Begues','Sant Climent de Llobregat','Vallirana','el Papiol'
 ]);
 const municipalPastels=[
- '#f3c6c6','#c9def2','#d7edc8','#ead3f0','#f4dfad',
- '#c9e6df','#ddd2f2','#f0cbdc','#cfe4c5','#f1d1b5','#d1dced'
+ '#e8a8a8','#a9c9e8','#b8dba5','#d6a9df','#e8ca7f',
+ '#a9d8cc','#c0afe4','#e2a8c1','#add294','#e2b18d','#b1c2df'
 ];
 function municipalPastel(name){
  let h=0;
@@ -154,7 +154,7 @@ const municipalBoundaryLayer=L.geoJSON(null,{
    weight:1.8,
    opacity:0.95,
    fillColor:municipalPastel(feature.properties?.nom||feature.properties?.NOMMUNI||''),
-   fillOpacity:0.22
+   fillOpacity:0.30
  }),
  onEachFeature:(feature,layer)=>{
    const name=feature.properties?.nom||feature.properties?.NOMMUNI||'';
