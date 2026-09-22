@@ -15,14 +15,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 .item b{display:block}
 .item a{color:#1565c0;text-decoration:none}
 .barrio-label{
- background:rgba(255,255,255,.82);
+ background:rgba(255,255,255,.38);
  border:0;
- box-shadow:0 1px 4px rgba(0,0,0,.20);
+ box-shadow:none;
  color:#222;
  font-size:12px;
  font-weight:600;
- padding:3px 5px;
- border-radius:4px;
+ padding:1px 2px;
+ border-radius:2px;
  white-space:nowrap
 }
 .barrio-label:before{display:none}
@@ -99,7 +99,7 @@ rows.forEach((b,i)=>{
 });
 
 function updateBarrioLabels(){
-  const showNames=map.getZoom()>=13;
+  const showNames=map.getZoom()>=13.8;
   barrioLabels.forEach(t=>{
     const el=t.getElement();
     if(el) el.style.display=showNames?'':'none';
