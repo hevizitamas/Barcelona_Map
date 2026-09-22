@@ -26,6 +26,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
  white-space:nowrap
 }
 .barrio-label:before{display:none}
+.municipal-label{
+ background:rgba(255,255,255,.82);
+ border:1px solid rgba(21,94,138,.45);
+ box-shadow:0 1px 3px rgba(0,0,0,.18);
+ color:#15415a;
+ font-size:11px;
+ font-weight:700;
+ padding:2px 4px;
+ border-radius:3px;
+ white-space:nowrap
+}
+.municipal-label:before{display:none}
 </style>
 </head>
 <body>
@@ -111,18 +123,50 @@ function pointInGeoJSON(point,geometry){
  return false;
 }
 
-// Official AMB municipality polygons. This service is Web Mercator (EPSG:3857),
-// the same projection used by the Leaflet/OSM map, so it can be drawn directly.
-const municipalBoundaryLayer=L.esri.dynamicMapLayer({
- url:'https://geoportal.amb.cat/geoserveis/rest/services/ADSE/InfoPAE_AUX/MapServer',
- layers:[2],
- opacity:1,
- format:'png32',
- transparent:true
+// Municipal administrative boundaries around Barcelona.
+// Source: ICGC municipal polygons (WGS84 GeoJSON), loaded directly so the
+// boundaries do not depend on the AMB ArcGIS image renderer.
+const MUNICIPAL_GEOJSON_URL='https://raw.githubusercontent.com/netraular/simple-webs/main/data-src/municipis.geojson';
+const municipalLabels=[];
+const municipalBoundaryLayer=L.geoJSON(null,{
+ style:{
+   color:'#155e8a',
+   weight:2.4,
+   opacity:0.95,
+   fillColor:'#ffffff',
+   fillOpacity:0
+ },
+ onEachFeature:(feature,layer)=>{
+   const name=feature.properties?.nom||feature.properties?.NOMMUNI||'';
+   if(name) {
+     layer.bindTooltip(name,{
+       permanent:true,
+       direction:'center',
+       className:'municipal-label',
+       opacity:0.9
+     });
+     municipalLabels.push(layer.getTooltip());
+   }
+ }
 }).addTo(map);
 
-municipalBoundaryLayer.on('load',()=>console.log('Official AMB municipality layer loaded'));
-municipalBoundaryLayer.on('requesterror',e=>console.error('Official AMB municipality layer failed:',e));
+fetch(MUNICIPAL_GEOJSON_URL,{mode:'cors',cache:'force-cache'})
+ .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
+ .then(data=>{
+   municipalBoundaryLayer.addData(data);
+   console.log('ICGC municipal boundaries loaded:',data.features?.length||0);
+   updateMunicipalLabels();
+ })
+ .catch(e=>console.error('ICGC municipal boundaries failed:',e));
+
+function updateMunicipalLabels(){
+  const z=map.getZoom();
+  const showNames=z>=10.0 && z<13.8;
+  municipalLabels.forEach(t=>{
+    const el=t.getElement();
+    if(el) el.style.display=showNames?'':'none';
+  });
+}
 
 function updateBarrioLabels(){
   const showNames=map.getZoom()>=13.8;
@@ -132,6 +176,7 @@ function updateBarrioLabels(){
   });
 }
 map.on('zoomend',updateBarrioLabels);
+map.on('zoomend',updateMunicipalLabels);
 
 listings.forEach(x=>{
  const m=L.circleMarker([x.lat,x.lon],{radius:4,color:'#111827',weight:1.5,fillColor:'#f59e0b',fillOpacity:1}).addTo(map);
