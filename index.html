@@ -63,8 +63,8 @@ const rows=[{"nom":"el Raval","geometry":[[41.385930198550525,2.164713785844925]
 ;
 console.log('73 barrio polygons:',rows.length);
 
-// SVG renderer is intentional: reliable for detailed polygons and clicking on iPhone.
-const renderer=L.svg({padding:0.5});
+// Canvas renderer: reliable for all 73 detailed barrio polygons on mobile.
+const renderer=L.canvas({padding:0.5});
 const bounds=L.latLngBounds([]);
 
 rows.forEach((b,i)=>{
@@ -106,15 +106,28 @@ listings.forEach(x=>{
 
 // Force the initial viewport to the entire Barcelona city area.
 // Mobile Safari/WebViews can calculate the map size too early, so retry after layout.
-const BARCELONA_BOUNDS=[[41.325,2.055],[41.470,2.245]];
+const BARCELONA_CENTER=[41.397,2.160];
+const BARCELONA_ZOOM=10.4;
 function showWholeBarcelona(){
   map.invalidateSize(true);
-  map.fitBounds(BARCELONA_BOUNDS,{padding:[18,18],maxZoom:10.8});
+  map.setView(BARCELONA_CENTER,BARCELONA_ZOOM,false);
 }
 showWholeBarcelona();
-setTimeout(showWholeBarcelona,300);
-setTimeout(showWholeBarcelona,1000);
+setTimeout(showWholeBarcelona,250);
+setTimeout(showWholeBarcelona,800);
+setTimeout(showWholeBarcelona,1600);
 window.addEventListener('resize',()=>setTimeout(showWholeBarcelona,100));
+
+const fullBtn=L.control({position:'topright'});
+fullBtn.onAdd=function(){
+  const d=L.DomUtil.create('div','leaflet-bar');
+  d.style.background='#fff'; d.style.cursor='pointer'; d.style.padding='8px 10px';
+  d.style.fontWeight='700'; d.style.fontSize='12px'; d.style.boxShadow='0 1px 5px rgba(0,0,0,.35)';
+  d.textContent='TELJES BARCELONA';
+  d.onclick=function(e){L.DomEvent.stopPropagation(e); showWholeBarcelona();};
+  return d;
+};
+fullBtn.addTo(map);
 </script>
 </body>
 </html>
