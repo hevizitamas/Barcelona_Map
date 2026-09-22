@@ -68,6 +68,7 @@ const renderer=L.canvas({padding:0.5});
 const bounds=L.latLngBounds([]);
 
 rows.forEach((b,i)=>{
+ if(!Array.isArray(b.geometry) || b.geometry.length<3) return;
  const pts=b.geometry.map(p=>[p[0],p[1]]);
  pts.forEach(p=>bounds.extend(p));
 
