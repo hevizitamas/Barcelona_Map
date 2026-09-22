@@ -103,12 +103,12 @@ rows.forEach((b,i)=>{
  poly.on('mouseout',()=>poly.setStyle({weight:1.6,fillOpacity:0.27}));
 });
 
-const municipalLayerUrl='https://ide.amb.cat/geoserveispi/rest/services/SIGMIT/Situacio_AMB/MapServer/2';
+const municipalLayerUrl='https://agportal.dtes.gencat.cat/server/rest/services/PREMET/PREMET/FeatureServer/3';
 
 const municipalLayer=L.esri.featureLayer({
  url:municipalLayerUrl,
- where:"1=1",
- fields:['FID','NOM_MUNI'],
+ where:"NOM IN ('Esplugues de Llobregat','L\\'Hospitalet de Llobregat','el Prat de Llobregat','Cornellà de Llobregat','Sant Joan Despí','Sant Boi de Llobregat','Viladecans','Gavà')",
+ fields:['NOM'],
  minZoom:9,
  maxZoom:19,
  simplifyFactor:0.5,
@@ -122,7 +122,7 @@ const municipalLayer=L.esri.featureLayer({
   fill:true
  },
  onEachFeature:(feature,layer)=>{
-  const name=feature.properties?.NOM_MUNI || 'Közigazgatási egység';
+  const name=feature.properties?.NOM || 'Közigazgatási egység';
   if(name==='Barcelona' || !name) return;
   layer.bindTooltip(name,{
    permanent:true,
