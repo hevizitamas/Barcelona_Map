@@ -108,7 +108,9 @@ const municipalLayerUrl='https://ide.amb.cat/geoserveispi/rest/services/SIGMIT/S
 const municipalLayer=L.esri.featureLayer({
  url:municipalLayerUrl,
  where:"1=1",
- fields:['MUNICIPI'],
+ fields:['FID','NOM_MUNI'],
+ minZoom:9,
+ maxZoom:19,
  simplifyFactor:0.5,
  precision:5,
  style:{
@@ -120,8 +122,8 @@ const municipalLayer=L.esri.featureLayer({
   fill:true
  },
  onEachFeature:(feature,layer)=>{
-  const name=feature.properties?.MUNICIPI || 'Közigazgatási egység';
-  if(name==='Barcelona') return;
+  const name=feature.properties?.NOM_MUNI || 'Közigazgatási egység';
+  if(name==='Barcelona' || !name) return;
   layer.bindTooltip(name,{
    permanent:true,
    direction:'center',
