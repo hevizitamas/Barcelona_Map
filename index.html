@@ -48,23 +48,12 @@ const listings=[
 ];
 
 const palette=[
- '#cfe8f3','#f3dfc1','#d9ead3','#f6dfad','#e5d8ef',
- '#f2d2d2','#d3e8e2','#e9dfc5','#d8e0f1','#dcebd5'
+ '#b9dff0','#ead7b7','#c9e3c0','#f2d39b','#d9c8e8',
+ '#f0c7c7','#c5ddd9','#e2d7b8','#cbd6ec','#d8e8d0',
+ '#c8e2df','#ead1df','#d8e3c1','#f1d5c6','#d4d8ed'
 ];
 
-function pointInPolygon(lat,lon,ring){
- let inside=false;
- for(let i=0,j=ring.length-1;i<ring.length;j=i++){
-  const yi=ring[i][0],xi=ring[i][1];
-  const yj=ring[j][0],xj=ring[j][1];
-  const intersect=((yi>lat)!==(yj>lat)) &&
-    (lon<(xj-xi)*(lat-yi)/(yj-yi)+xi);
-  if(intersect) inside=!inside;
- }
- return inside;
-}
-
-function popupForListing(x){
+function listingPopup(x){
  return '<div class="name">'+(x.barri||'Barcelona környéke')+'</div>'+
  '<b>'+x.title+'</b><br>'+x.size+' · '+x.rent+'<br>'+
  x.deposit+' · '+x.sqm+'<br>'+
@@ -72,91 +61,95 @@ function popupForListing(x){
 }
 
 fetch('./barris.json')
- .then(r=>r.json())
+ .then(r=>{
+   if(!r.ok) throw new Error('barris.json HTTP '+r.status);
+   return r.json();
+ })
  .then(rows=>{
-   const features=rows.map((x,i)=>({
-     type:'Feature',
-     properties:{nom:x.nom,color:palette[i%palette.length]},
-     geometry:{
-       type:'Polygon',
-       coordinates:[x.geometry.map(p=>[p[1],p[0]])]
-     }
-   }));
+   console.log('Barcelona barris betöltve:',rows.length);
 
-   // Approximate listing points are assigned automatically to the barrio polygon.
-   listings.forEach(x=>{
-     const f=features.find(f=>pointInPolygon(x.lat,x.lon,f.geometry.coordinates[0].map(p=>[p[1],p[0]])));
-     if(f) x.barri=f.properties.nom;
+   // IMPORTANT: barris.json already stores coordinates as [latitude, longitude].
+   // Draw them directly with Leaflet polygons; do NOT convert them to GeoJSON.
+   const barrioLayers=[];
+   const allBounds=L.latLngBounds([]);
+
+   rows.forEach((barrio,i)=>{
+     const latLngs=barrio.geometry.map(p=>[p[0],p[1]]);
+     const color=palette[i%palette.length];
+
+     const poly=L.polygon(latLngs,{
+       renderer:L.canvas(),
+       color:'#d63b35',
+       weight:1.7,
+       opacity:0.95,
+       fillColor:color,
+       fillOpacity:0.28,
+       interactive:true
+     }).addTo(map);
+
+     poly.bindTooltip(barrio.nom,{
+       permanent:true,
+       direction:'center',
+       className:'barrio-label',
+       opacity:0.95
+     });
+
+     poly.on('mouseover',()=>{
+       poly.setStyle({weight:3,fillOpacity:0.42});
+       poly.bringToFront();
+     });
+     poly.on('mouseout',()=>{
+       poly.setStyle({weight:1.7,fillOpacity:0.28});
+     });
+
+     poly.on('click',()=>{
+       const found=listings.filter(x=>pointInPolygon([x.lat,x.lon],latLngs));
+       let h='<div class="name">'+barrio.nom+'</div>';
+       if(found.length){
+         found.forEach(x=>{
+           h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+
+              '<br>'+x.deposit+' · '+x.sqm+
+              '<br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>';
+         });
+       }else{
+         h+='<div>Nincs még hozzárendelt ingatlan.</div>';
+       }
+       poly.bindPopup(h).openPopup();
+     });
+
+     latLngs.forEach(p=>allBounds.extend(p));
+     barrioLayers.push(poly);
    });
 
-   const canvasRenderer=L.canvas({padding:0.5});
+   // Keep the entire 73-barrio Barcelona area in view.
+   listings.forEach(x=>allBounds.extend([x.lat,x.lon]));
+   map.fitBounds(allBounds,{padding:[12,12]});
 
-   const layer=L.geoJSON(
-     {type:'FeatureCollection',features},
-     {
-       renderer:canvasRenderer,
-       style:f=>({
-         color:'#d63b35',
-         weight:1.6,
-         opacity:.95,
-         fillColor:f.properties.color,
-         fillOpacity:.30,
-         fill:true
-       }),
-       onEachFeature:(f,l)=>{
-         const name=f.properties.nom;
-         const found=listings.filter(x=>x.barri===name);
-
-         let html='<div class="name">'+name+'</div>';
-         if(found.length){
-           found.forEach(x=>{
-             html+='<div class="item"><b>'+x.title+'</b>'+
-               x.size+' · '+x.rent+'<br>'+
-               x.deposit+' · '+x.sqm+'<br>'+
-               '<a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>';
-           });
-         }else{
-           html+='<div>Nincs még hozzárendelt ingatlan.</div>';
-         }
-
-         l.bindTooltip(name,{
-           permanent:true,
-           direction:'center',
-           className:'barrio-label',
-           opacity:.95
-         });
-         l.bindPopup(html);
-
-         l.on('mouseover',()=>{
-           l.setStyle({weight:3,fillOpacity:.42});
-           l.bringToFront();
-         });
-         l.on('mouseout',()=>{
-           l.setStyle({weight:1.6,fillOpacity:.30});
-         });
-       }
-     }
-   ).addTo(map);
-
-   // Show the complete Barcelona area plus the nearby Hospitalet listings.
-   const bounds=layer.getBounds();
-   listings.forEach(x=>bounds.extend([x.lat,x.lon]));
-   map.fitBounds(bounds,{padding:[12,12]});
-
-   // Add property markers after barrio assignment.
+   // Add property markers after all polygons are present.
    listings.forEach(x=>{
      const marker=L.circleMarker([x.lat,x.lon],{
-       radius:7,
-       color:'#111827',
-       weight:2,
-       fillColor:'#fff',
-       fillOpacity:1
-     });
-     marker.bindPopup(popupForListing(x));
-     marker.addTo(map);
+       radius:7,color:'#111827',weight:2,fillColor:'#fff',fillOpacity:1
+     }).addTo(map);
+     marker.bindPopup(listingPopup(x));
    });
  })
- .catch(e=>console.error('barris.json betöltési hiba:',e));
+ .catch(e=>{
+   console.error(e);
+   alert('A városrészek térképadatának betöltése nem sikerült.');
+ });
+
+function pointInPolygon(point,vs){
+ const y=point[0],x=point[1];
+ let inside=false;
+ for(let i=0,j=vs.length-1;i<vs.length;j=i++){
+   const yi=vs[i][0],xi=vs[i][1];
+   const yj=vs[j][0],xj=vs[j][1];
+   const intersect=((yi>y)!==(yj>y)) &&
+     (x<(xj-xi)*(y-yi)/(yj-yi)+xi);
+   if(intersect) inside=!inside;
+ }
+ return inside;
+}
 </script>
 </body>
 </html>
