@@ -104,8 +104,17 @@ listings.forEach(x=>{
  m.bindPopup(popup(x));
 });
 
-// Explicit Barcelona-wide viewport. Do not fit to a subset of visible layers.
-map.fitBounds([[41.325,2.055],[41.470,2.245]],{padding:[8,8]});
+// Force the initial viewport to the entire Barcelona city area.
+// Mobile Safari/WebViews can calculate the map size too early, so retry after layout.
+const BARCELONA_BOUNDS=[[41.325,2.055],[41.470,2.245]];
+function showWholeBarcelona(){
+  map.invalidateSize(true);
+  map.fitBounds(BARCELONA_BOUNDS,{padding:[18,18],maxZoom:10.8});
+}
+showWholeBarcelona();
+setTimeout(showWholeBarcelona,300);
+setTimeout(showWholeBarcelona,1000);
+window.addEventListener('resize',()=>setTimeout(showWholeBarcelona,100));
 </script>
 </body>
 </html>
