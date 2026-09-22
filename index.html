@@ -108,7 +108,7 @@ function updateBarrioLabels(){
 map.on('zoomend',updateBarrioLabels);
 
 listings.forEach(x=>{
- const m=L.circleMarker([x.lat,x.lon],{radius:7,color:'#111827',weight:2,fillColor:'#fff',fillOpacity:1}).addTo(map);
+ const m=L.circleMarker([x.lat,x.lon],{radius:4,color:'#111827',weight:1.5,fillColor:'#f59e0b',fillOpacity:1}).addTo(map);
  m.bindPopup(popup(x));
 });
 
