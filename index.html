@@ -66,6 +66,7 @@ console.log('73 barrio polygons:',rows.length);
 // Canvas renderer: reliable for all 73 detailed barrio polygons on mobile.
 const renderer=L.canvas({padding:0.5});
 const bounds=L.latLngBounds([]);
+const barrioLabels=[];
 
 rows.forEach((b,i)=>{
  if(!Array.isArray(b.geometry) || b.geometry.length<3) return;
@@ -88,6 +89,7 @@ rows.forEach((b,i)=>{
    className:'barrio-label',
    opacity:0.9
  });
+ barrioLabels.push(poly.getTooltip());
 
  poly.on('click',()=>{
    const found=listings.filter(x=>pointInPolygon([x.lat,x.lon],pts));
@@ -99,6 +101,15 @@ rows.forEach((b,i)=>{
  poly.on('mouseover',()=>poly.setStyle({weight:3,fillOpacity:0.40}));
  poly.on('mouseout',()=>poly.setStyle({weight:1.6,fillOpacity:0.27}));
 });
+
+function updateBarrioLabels(){
+  const showNames=map.getZoom()>=13;
+  barrioLabels.forEach(t=>{
+    const el=t.getElement();
+    if(el) el.style.display=showNames?'':'none';
+  });
+}
+map.on('zoomend',updateBarrioLabels);
 
 listings.forEach(x=>{
  const m=L.circleMarker([x.lat,x.lon],{radius:7,color:'#111827',weight:2,fillColor:'#fff',fillOpacity:1}).addTo(map);
@@ -114,6 +125,7 @@ function showWholeBarcelona(){
   map.setView(BARCELONA_CENTER,BARCELONA_ZOOM,false);
 }
 showWholeBarcelona();
+updateBarrioLabels();
 setTimeout(showWholeBarcelona,250);
 setTimeout(showWholeBarcelona,800);
 setTimeout(showWholeBarcelona,1600);
