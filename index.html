@@ -111,18 +111,18 @@ function pointInGeoJSON(point,geometry){
  return false;
 }
 
-// Official AMB municipal interior boundaries, rendered as line-only map layers.
-// The AMB publishes the same municipal boundaries at several scale levels;
-// using the scale-specific line layers keeps the boundaries visible while zooming.
-const municipalBoundaryService='https://geoportal.amb.cat/geoserveisapp/rest/services/Cartografia/topografia_5000_analogic_hibrid_1977_25831/MapServer';
+// Official AMB municipality polygons. This service is Web Mercator (EPSG:3857),
+// the same projection used by the Leaflet/OSM map, so it can be drawn directly.
 const municipalBoundaryLayer=L.esri.dynamicMapLayer({
- url:municipalBoundaryService,
- layers:[793,827,857,867],
+ url:'https://geoportal.amb.cat/geoserveis/rest/services/ADSE/InfoPAE_AUX/MapServer',
+ layers:[2],
  opacity:1,
  format:'png32',
- transparent:true,
- f:'image'
+ transparent:true
 }).addTo(map);
+
+municipalBoundaryLayer.on('load',()=>console.log('Official AMB municipality layer loaded'));
+municipalBoundaryLayer.on('requesterror',e=>console.error('Official AMB municipality layer failed:',e));
 
 function updateBarrioLabels(){
   const showNames=map.getZoom()>=13.8;
