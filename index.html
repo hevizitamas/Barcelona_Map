@@ -93,7 +93,7 @@ rows.forEach((b,i)=>{
    weight:1.6,
    opacity:0.95,
    fillColor:palette[i%palette.length],
-   fillOpacity:0.001.27,
+   fillOpacity:0.27,
    fill:true
  }).addTo(map);
 
@@ -135,7 +135,7 @@ const municipalBoundaryLayer=L.geoJSON(null,{
    weight:3,
    opacity:1,
    fillColor:'#ffffff',
-   fillOpacity:0
+   fillOpacity:0.001
  },
  onEachFeature:(feature,layer)=>{
    const name=feature.properties?.nom||feature.properties?.NOMMUNI||'';
