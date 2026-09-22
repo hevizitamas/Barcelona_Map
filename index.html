@@ -37,7 +37,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
  maxZoom:19,attribution:'© OpenStreetMap contributors'
 }).addTo(map);
 
-const listings=[]
+const listings=[
+ {id:'109440457',lat:41.4102622,lon:2.2090496,title:'Calle del Treball, 67 V',size:'430 m²',rent:'4 200 €/hó',deposit:'1 havi kaució',sqm:'9,77 €/m²',positive:'különálló épület, nagy belmagasság',negative:'lelakott, sokba kerül felújítani',url:'https://www.idealista.com/inmueble/109440457/'}
+]
 
 const palette=['#b9dff0','#ead7b7','#c9e3c0','#f2d39b','#d9c8e8','#f0c7c7','#c5ddd9','#e2d7b8','#cbd6ec','#d8e8d0','#c8e2df','#ead1df','#d8e3c1','#f1d5c6','#d4d8ed'];
 
@@ -88,7 +90,7 @@ rows.forEach((b,i)=>{
  poly.on('click',()=>{
    const found=listings.filter(x=>pointInPolygon([x.lat,x.lon],pts));
    let h='<div class="name">'+b.nom+'</div>';
-   if(found.length) found.forEach(x=>h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
+   if(found.length) found.forEach(x=>h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b>pozitív:</b> '+x.positive+'<br><b>negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
    else h+='<div>Nincs még hozzárendelt ingatlan.</div>';
    poly.bindPopup(h).openPopup();
  });
