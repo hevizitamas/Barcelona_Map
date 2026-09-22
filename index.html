@@ -42,10 +42,64 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 }
 .municipal-label:before{display:none}
 .municipal-label{pointer-events:none}
+.full-list-control{
+ background:#fff;
+ border:1px solid rgba(0,0,0,.2);
+ border-radius:4px;
+ box-shadow:0 1px 5px rgba(0,0,0,.25);
+ padding:0;
+ overflow:hidden
+}
+.full-list-button{
+ border:0;
+ background:#fff;
+ color:#222;
+ font-size:13px;
+ font-weight:600;
+ padding:8px 10px;
+ cursor:pointer;
+ white-space:nowrap
+}
+.full-list-button:hover{background:#f4f4f4}
+.full-list-panel{
+ position:fixed;
+ z-index:10000;
+ top:58px;
+ right:10px;
+ max-width:calc(100vw - 20px);
+ max-height:calc(100vh - 78px);
+ overflow:auto;
+ background:#fff;
+ border:1px solid rgba(0,0,0,.2);
+ border-radius:6px;
+ box-shadow:0 3px 14px rgba(0,0,0,.28);
+ padding:12px;
+ display:none
+}
+.full-list-panel.open{display:block}
+.full-list-title{
+ font-size:16px;
+ font-weight:700;
+ margin:0 0 8px
+}
+.full-list-grid{
+ display:grid;
+ grid-template-columns:1fr;
+ gap:8px
+}
+.full-list-grid .item{min-width:210px}
+@media (min-width:700px){
+ .full-list-grid{grid-template-columns:repeat(2,minmax(230px,1fr))}
+}
+@media (min-width:1100px){
+ .full-list-grid{grid-template-columns:repeat(3,minmax(230px,1fr))}
+}
+
 </style>
 </head>
 <body>
 <div id="map"></div>
+<div id="fullListPanel" class="full-list-panel"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/esri-leaflet@3.0.19/dist/esri-leaflet.js"></script>
 <script>
@@ -259,6 +313,45 @@ setTimeout(showWholeBarcelona,800);
 setTimeout(showWholeBarcelona,1600);
 window.addEventListener('resize',()=>setTimeout(showWholeBarcelona,100));
 
+
+// Teljes ingatlanlista: csak a gomb nyitja meg, nem kapcsolódik egyik térképi területhez sem.
+function toggleFullList(){
+ const panel=document.getElementById('fullListPanel');
+ if(panel.classList.contains('open')){
+   panel.classList.remove('open');
+   return;
+ }
+ let h='<div class="full-list-title">Összes ingatlan ('+listings.length+')</div><div class="full-list-grid">';
+ listings.forEach(x=>{
+   h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+
+      '<div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b style="color:#176b3a">pozitív:</b> '+x.positive+
+      '<br><b style="color:#b42318">negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>';
+ });
+ h+='</div>';
+ panel.innerHTML=h;
+ panel.classList.add('open');
+}
+
+const fullListControl=L.control({position:'topright'});
+fullListControl.onAdd=function(){
+ const div=L.DomUtil.create('div','full-list-control');
+ const btn=L.DomUtil.create('button','full-list-button',div);
+ btn.type='button';
+ btn.textContent='ÖSSZES INGATLAN';
+ btn.title='Az összes ingatlan listája';
+ L.DomEvent.disableClickPropagation(div);
+ L.DomEvent.on(btn,'click',toggleFullList);
+ return div;
+};
+fullListControl.addTo(map);
+
+document.addEventListener('click',e=>{
+ const panel=document.getElementById('fullListPanel');
+ const control=document.querySelector('.full-list-control');
+ if(panel.classList.contains('open') && !panel.contains(e.target) && !control.contains(e.target)){
+   panel.classList.remove('open');
+ }
+});
 </script>
 </body>
 </html>
