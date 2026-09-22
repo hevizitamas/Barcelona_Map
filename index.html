@@ -126,13 +126,13 @@ function pointInGeoJSON(point,geometry){
 // Municipal administrative boundaries around Barcelona.
 // Source: ICGC municipal polygons (WGS84 GeoJSON), loaded directly so the
 // boundaries do not depend on the AMB ArcGIS image renderer.
-const MUNICIPAL_GEOJSON_URL='https://raw.githubusercontent.com/netraular/simple-webs/main/data-src/municipis.geojson';
+const MUNICIPAL_GEOJSON_URL='./municipis_barcelona.geojson';
 const municipalLabels=[];
 const municipalBoundaryLayer=L.geoJSON(null,{
  style:{
-   color:'#155e8a',
-   weight:2.4,
-   opacity:0.95,
+   color:'#0b4f71',
+   weight:3,
+   opacity:1,
    fillColor:'#ffffff',
    fillOpacity:0
  },
