@@ -103,12 +103,12 @@ rows.forEach((b,i)=>{
  poly.on('mouseout',()=>poly.setStyle({weight:1.6,fillOpacity:0.27}));
 });
 
-const municipalLayerUrl='https://agportal.dtes.gencat.cat/server/rest/services/PREMET/PREMET/FeatureServer/3';
+const municipalLayerUrl='https://ide.amb.cat/geoserveispi/rest/services/SIGMIT/Situacio_AMB/MapServer/2';
 
 const municipalLayer=L.esri.featureLayer({
  url:municipalLayerUrl,
- where:"NOM <> 'Barcelona'",
- fields:['NOM'],
+ where:"NOM_MUNI <> 'Barcelona'",
+ fields:['NOM_MUNI'],
  simplifyFactor:0.5,
  precision:5,
  style:{
@@ -120,7 +120,7 @@ const municipalLayer=L.esri.featureLayer({
   fill:true
  },
  onEachFeature:(feature,layer)=>{
-  const name=feature.properties?.NOM || 'Közigazgatási egység';
+  const name=feature.properties?.NOM_MUNI || 'Közigazgatási egység';
   layer.bindTooltip(name,{
    permanent:true,
    direction:'center',
