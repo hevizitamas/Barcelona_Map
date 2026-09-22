@@ -129,6 +129,15 @@ function pointInGeoJSON(point,geometry){
 // boundaries do not depend on the AMB ArcGIS image renderer.
 const MUNICIPAL_GEOJSON_URL='./municipis_barcelona.geojson';
 const municipalLabels=[];
+const EXCLUDED_MUNICIPALITIES=new Set([
+ 'Abrera','Martorell','Sant Andreu de la Barca','Corbera de Llobregat',
+ 'Rubí','Terrassa','Cerdanyola del Vallès','Sant Cugat del Vallès',
+ 'Molins de Rei','Sant Feliu de Llobregat','Sant Just Desvern',
+ 'Esplugues de Llobregat','Castellbisbal','Castellví de Rosanes',
+ 'Pallejà','Cervelló','la Palma de Cervelló','El Papiol',
+ 'Sant Vicenç dels Horts','Santa Coloma de Cervelló','Torrelles de Llobregat',
+ 'Sant Boi de Llobregat','Gavà','Castelldefels','Viladecans'
+]);
 const municipalBoundaryLayer=L.geoJSON(null,{
  style:{
    color:'#0b4f71',
@@ -170,6 +179,10 @@ const municipalBoundaryLayer=L.geoJSON(null,{
 fetch(MUNICIPAL_GEOJSON_URL,{mode:'cors',cache:'force-cache'})
  .then(r=>{if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
  .then(data=>{
+   data.features=(data.features||[]).filter(f=>{
+     const n=f.properties?.nom||f.properties?.NOMMUNI||'';
+     return !EXCLUDED_MUNICIPALITIES.has(n);
+   });
    municipalBoundaryLayer.addData(data);
    console.log('ICGC municipal boundaries loaded:',data.features?.length||0);
    updateMunicipalLabels();
