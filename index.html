@@ -14,11 +14,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 .item{border-top:1px solid #eee;padding-top:8px;margin-top:8px}
 .item b{display:block}
 .item a{color:#1565c0;text-decoration:none}
-</style>
+.barrio-label{background:rgba(255,255,255,.72);border:0;box-shadow:0 1px 4px rgba(0,0,0,.18);color:#333;font-size:12px;font-weight:600;padding:3px 5px;border-radius:4px}.barrio-label:before{display:none}</style>
 </head>
 <body>
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map=L.map('map',{zoomControl:true}).setView([41.3874,2.1686],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+ maxZoom:19,attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+
+const listings=[
+ {id:'109440457',lat:41.4102622,lon:2.2090496,title:'Calle del Treball, 67 V',size:'430 m²',rent:'4 200 €/hó',deposit:'1 havi kaució',sqm:'9,77 €/m²',url:'https://www.idealista.com/inmueble/109440457/'},
+ {id:'111059305',lat:41.3553244,lon:2.1039505,title:'Zona del Mig',size:'350 m²',rent:'2 900 €/hó',deposit:'2 havi kaució',sqm:'8,29 €/m²',url:'https://www.idealista.com/inmueble/111059305/'},
+ {id:'108885012',lat:41.4184276,lon:2.1828846,title:'Calle de las Navas de Tolosa, 334',size:'453 m²',rent:'1 700 €/hó az 1. évben; 2 100 € a 2. évben; 2 500 € a 3. évtől',deposit:'2 havi kaució',sqm:'5,52 €/m²',url:'https://www.idealista.com/inmueble/108885012/'},
+ {id:'112096883',lat:41.3528613,lon:2.1248373,title:'Calle de les Ciències',size:'500 m²',rent:'4 200 €/hó',deposit:'Nincs megadva',sqm:'8,40 €/m²',url:'https://www.idealista.com/inmueble/112096883/'},
+ {id:'111622804',lat:41.4397568,lon:2.1773824,title:'Calle Font d’en Canyelles',size:'452 m²',rent:'2 000 €/hó',deposit:'Nincs megadva',sqm:'4,42 €/m²',url:'https://www.idealista.com/inmueble/111622804/'}
+];
+
+const palette=['#b9dff0','#ead7b7','#c9e3c0','#f2d39b','#d9c8e8','#f0c7c7','#c5ddd9','#e2d7b8','#cbd6ec','#d8e8d0'];
+
+function pointInPolygon(point,vs){
+ let x=point[1],y=point[0],inside=false;
+ for(let i=0,j=vs.length-1;i<vs.length;j=i++){
+  const xi=vs[i][1],yi=vs[i][0],xj=vs[j][1],yj=vs[j][0];
+  const intersect=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);
+  if(intersect) inside=!inside;
+ }
+ return inside;
+}
+
+fetch('./barris.json').then(r=>r.json()).then(rows=>{
+ const features=rows.map((x,i)=>({
+  type:'Feature',
+  properties:{nom:x.nom,color:palette[i%palette.length]},
+  geometry:{type:'Polygon',coordinates:[x.geometry]}
+ }));
+
+ // Automatically assign every Barcelona listing to the barrio polygon containing its approximate coordinates.
+ listings.forEach(x=>{
+  const f=features.find(f=>pointInPolygon([x.lat,x.lon],f.geometry.coordinates[0]));
+  if(f) x.barri=f.properties.nom;
+ });
+
+ const layer=L.geoJSON({type:'FeatureCollection',features},{
+  style:f=>({
+   color:'#d63b35',
+   weight:1.5,
+   opacity:.9,
+   fillColor:f.properties.color,
+   fillOpacity:.24
+  }),
+  onEachFeature:(f,l)=>{
+   const name=f.properties.nom;
+   const found=listings.filter(x=>x.barri===name);
+   let html='<div class="name">'+name+'</div>';
+   if(found.length) found.forEach(x=>html+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><a href="'+x.url+'" target="_blank">Idealista →</a></div>');
+   else html+='<div>Nincs még hozzárendelt ingatlan.</div>';
+   l.bindTooltip(name,{permanent:true,direction:'center',className:'barrio-label',opacity:.9});
+   l.bindPopup(html);
+   l.on('mouseover',()=>l.setStyle({weight:3,fillOpacity:.34}));
+   l.on('mouseout',()=>l.setStyle({weight:1.5,fillOpacity:.24}));
+  }
+ }).addTo(map);
+
+ map.fitBounds(layer.getBounds(),{padding:[10,10]});
+}).catch(e=>console.error(e));
+
+listings.forEach(x=>{
+ const marker=L.circleMarker([x.lat,x.lon],{radius:7,color:'#111827',weight:2,fillColor:'#fff',fillOpacity:1});
+ marker.bindPopup('<div class="name">'+(x.barri||'Barcelona környéke')+'</div><b>'+x.title+'</b><br>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<br><a href="'+x.url+'" target="_blank">Idealista →</a>');
+ marker.addTo(map);
+});
+</script>
 <script>
 const map=L.map('map',{zoomControl:true}).setView([41.3874,2.1686],12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
