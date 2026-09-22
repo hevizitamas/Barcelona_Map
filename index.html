@@ -136,8 +136,13 @@ function pointInGeoJSON(point,geometry){
 const MUNICIPAL_GEOJSON_URL='./municipis_barcelona.geojson';
 const municipalLabels=[];
 const EXCLUDED_MUNICIPALITIES=new Set([
- // Csak a Barcelonával összefüggően beépült, közvetlen agglomerációs területek maradnak.
- // A távolabbi, önállóan beépült települések nem jelennek meg és nem kattinthatók.
+ // A felhasználó által kért, távolabbi / különálló külső települések nem jelennek meg és nem kattinthatók.
+ 'Santa Coloma de Cervelló','Torrelles de Llobregat','Begues','Gavà',
+ 'Castelldefels','Viladecans','Sant Boi de Llobregat','Cervelló',
+ 'la Palma de Cervelló','Pallejà','Corbera de Llobregat','Castellví de Rosanes',
+ 'Castellbisbal','Rubí','Abrera','Ripollet','Sant Fost de Campsentelles',
+ 'Badalona','Tiana','Alella','el Masnou','Teià','Premià de Mar',
+ 'Premià de Dalt','Vilassar de Mar',
  'Molins de Rei','Montcada i Reixac','Sant Cugat del Vallès',
  'Cerdanyola del Vallès','Sant Feliu de Llobregat',
 ]);
