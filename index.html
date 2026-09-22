@@ -139,14 +139,23 @@ const EXCLUDED_MUNICIPALITIES=new Set([
  'Sant Boi de Llobregat','Gavà','Castelldefels','Viladecans',
  'Begues','Sant Climent de Llobregat','Vallirana','el Papiol'
 ]);
+const municipalPastels=[
+ '#f3c6c6','#c9def2','#d7edc8','#ead3f0','#f4dfad',
+ '#c9e6df','#ddd2f2','#f0cbdc','#cfe4c5','#f1d1b5','#d1dced'
+];
+function municipalPastel(name){
+ let h=0;
+ for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+ return municipalPastels[h%municipalPastels.length];
+}
 const municipalBoundaryLayer=L.geoJSON(null,{
- style:{
-   color:'#0b4f71',
-   weight:3,
-   opacity:1,
-   fillColor:'#ffffff',
-   fillOpacity:0.001
- },
+ style:feature=>({
+   color:'#d63b35',
+   weight:1.8,
+   opacity:0.95,
+   fillColor:municipalPastel(feature.properties?.nom||feature.properties?.NOMMUNI||''),
+   fillOpacity:0.22
+ }),
  onEachFeature:(feature,layer)=>{
    const name=feature.properties?.nom||feature.properties?.NOMMUNI||'';
    if(name) {
