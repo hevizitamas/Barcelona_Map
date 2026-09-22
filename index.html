@@ -103,19 +103,7 @@ rows.forEach((b,i)=>{
 });
 
 const municipalQueryUrl='https://geoportal.amb.cat/geoserveis/rest/services/ADSE/InfoPAE_AUX/MapServer/2/query?where=1%3D1&outFields=NOM&returnGeometry=true&outSR=4326&f=geojson';
-const southwestMunicipalities=new Set([
- 'L\'Hospitalet de Llobregat',
- 'Cornellà de Llobregat',
- 'Esplugues de Llobregat',
- 'Sant Just Desvern',
- 'Sant Joan Despí',
- 'Sant Feliu de Llobregat',
- 'Sant Boi de Llobregat',
- 'el Prat de Llobregat',
- 'Viladecans',
- 'Gavà',
- 'Castelldefels'
-]);
+const southwestMunicipalities=null;
 
 function pointInRing(point,ring){
  const y=point[0],x=point[1]; let inside=false;
@@ -146,7 +134,7 @@ function pointInGeoJSON(point,geometry){
 fetch(municipalQueryUrl)
  .then(r=>r.json())
  .then(data=>{
-  (data.features||[]).filter(f=>southwestMunicipalities.has(f.properties?.NOM)).forEach(feature=>{
+  (data.features||[]).filter(f=>f.properties?.NOM && f.properties.NOM !== 'Barcelona').forEach(feature=>{
    const name=feature.properties.NOM;
    const layer=L.geoJSON(feature,{
     renderer,
