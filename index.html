@@ -147,6 +147,22 @@ const municipalBoundaryLayer=L.geoJSON(null,{
      });
      municipalLabels.push(layer.getTooltip());
    }
+
+   layer.on('click',()=>{
+     const found=listings.filter(x=>pointInGeoJSON([x.lat,x.lon],feature.geometry));
+     let h='<div class="name">'+name+'</div>';
+     if(found.length){
+       found.forEach(x=>{
+         h+='<div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+
+            '<br><div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b style="color:#176b3a">pozitív:</b> '+x.positive+
+            '<br><b style="color:#b42318">negatív:</b> '+x.negative+
+            '</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>';
+       });
+     }else{
+       h+='<div>Nincs még hozzárendelt ingatlan.</div>';
+     }
+     layer.bindPopup(h).openPopup();
+   });
  }
 }).addTo(map);
 
@@ -161,7 +177,7 @@ fetch(MUNICIPAL_GEOJSON_URL,{mode:'cors',cache:'force-cache'})
 
 function updateMunicipalLabels(){
   const z=map.getZoom();
-  const showNames=z>=10.0 && z<13.8;
+  const showNames=z>=11.5 && z<13.8;
   municipalLabels.forEach(t=>{
     const el=t.getElement();
     if(el) el.style.display=showNames?'':'none';
