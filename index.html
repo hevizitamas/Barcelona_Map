@@ -30,14 +30,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 }
 .barrio-label:before{display:none}
 .municipal-label{
- background:rgba(255,255,255,.82);
- border:1px solid rgba(21,94,138,.45);
- box-shadow:0 1px 3px rgba(0,0,0,.18);
- color:#15415a;
- font-size:11px;
- font-weight:700;
- padding:2px 4px;
- border-radius:3px;
+ background:rgba(255,255,255,.38);
+ border:0;
+ box-shadow:none;
+ color:#222;
+ font-size:12px;
+ font-weight:600;
+ padding:1px 2px;
+ border-radius:2px;
  white-space:nowrap
 }
 .municipal-label:before{display:none}
@@ -223,7 +223,7 @@ fetch(MUNICIPAL_GEOJSON_URL,{mode:'cors',cache:'force-cache'})
 
 function updateMunicipalLabels(){
   const z=map.getZoom();
-  const showNames=z>=11.5 && z<13.8;
+  const showNames=z>=10.5 && z<12.8;
   document.querySelectorAll('.municipal-label').forEach(el=>{
     el.style.display=showNames?'':'none';
   });
