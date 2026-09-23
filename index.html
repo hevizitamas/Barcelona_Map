@@ -294,7 +294,7 @@ fetch(MUNICIPAL_GEOJSON_URL,{mode:'cors',cache:'force-cache'})
 
 function updateMunicipalLabels(){
   const z=map.getZoom();
-  const showNames=z>=11.5 && z<13.8;
+  const showNames=z>=13.8;
   document.querySelectorAll('.municipal-label').forEach(el=>{
     el.style.display=showNames?'':'none';
   });
