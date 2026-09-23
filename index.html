@@ -43,8 +43,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 .municipal-label:before{display:none}
 .municipal-label{pointer-events:none}
 .property-marker{
- width:30px;
- height:30px;
+ width:24px;
+ height:24px;
  border-radius:50%;
  background:#f59e0b;
  border:2px solid #fff;
@@ -55,8 +55,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
  box-sizing:border-box;
 }
 .property-marker svg{
- width:16px;
- height:16px;
+ width:13px;
+ height:13px;
  display:block;
 }
 .full-list-control{
@@ -315,12 +315,12 @@ listings.forEach(x=>{
    icon:L.divIcon({
      className:'',
      html:'<div class="property-marker" title="Normál ingatlan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2v8.3a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.3Z" fill="#fff"/><path d="M9 21v-6h6v6" fill="#f59e0b"/></svg></div>',
-     iconSize:[30,30],
-     iconAnchor:[15,15],
-     popupAnchor:[0,-16]
+     iconSize:[24,24],
+     iconAnchor:[12,12],
+     popupAnchor:[0,-14]
    })
  }).addTo(map);
- m.bindPopup(popup(x));
+ m.bindPopup('<div class="name">'+(x.barri||'Barcelona környéke')+'</div><div class="item"><b>'+x.title+'</b>'+x.size+' · '+x.rent+'<br>'+x.deposit+' · '+x.sqm+'<div style="margin-top:7px;padding-top:7px;border-top:1px solid #eee"><b style="color:#176b3a">pozitív:</b> '+x.positive+'<br><b style="color:#b42318">negatív:</b> '+x.negative+'</div><br><a href="'+x.url+'" target="_blank" rel="noopener">Idealista →</a></div>');
 });
 
 // Force the initial viewport to the entire Barcelona city area.
