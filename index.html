@@ -59,6 +59,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
  height:13px;
  display:block;
 }
+.property-marker.featured{
+ width:28px;
+ height:28px;
+ background:#b02a83;
+ box-shadow:0 0 0 3px rgba(176,42,131,.22),0 2px 8px rgba(0,0,0,.40);
+}
+.property-marker.featured svg{
+ width:15px;
+ height:15px;
+}
 .full-list-control{
  background:#fff;
  border:1px solid rgba(0,0,0,.2);
@@ -129,11 +139,11 @@ const listings=[
  {id:'109440457',lat:41.4102622,lon:2.2090496,title:'Calle del Treball, 67 V',size:'430 m²',rent:'4 200 €/hó',deposit:'1 havi kaució',sqm:'9,77 €/m²',positive:'különálló épület, nagy belmagasság',negative:'lelakott, sokba kerül felújítani',url:'https://www.idealista.com/inmueble/109440457/'},
  {id:'112096883',lat:41.3528613,lon:2.1248373,title:'Calle de les Ciències',size:'500 m²',rent:'4 200 €/hó',deposit:'kaució nincs megadva',sqm:'8,40 €/m²',positive:'nagy különálló épület, jó állapot',negative:'ipari parknak tűnik',url:'https://www.idealista.com/inmueble/112096883/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
  {id:'111059305',lat:41.3553244,lon:2.1039505,title:'Zona del Mig',size:'350 m²',rent:'2 900 €/hó',deposit:'2 havi kaució',sqm:'8,29 €/m²',positive:'különálló, csarnok',negative:'csak 330 nm, elég kint van',url:'https://www.idealista.com/inmueble/111059305/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
- {id:'112157450',lat:41.3525993,lon:2.1037862,title:'Calle del Crom',size:'500 m²',rent:'3 350 €/hó',deposit:'2 havi kaució',sqm:'6,70 €/m²',positive:'valszeg volt már sport létesítmény, ki van alakítva valamennyire, nagy',negative:'ipari parkon belülinek látszik, kint van',url:'https://www.idealista.com/inmueble/112157450/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
+ {id:'112157450',lat:41.3525993,lon:2.1037862,title:'⭐ KIEMELT – Calle del Crom',featured:true,size:'500 m²',rent:'3 350 €/hó',deposit:'2 havi kaució',sqm:'6,70 €/m²',positive:'valszeg volt már sport létesítmény, ki van alakítva valamennyire, nagy',negative:'ipari parkon belülinek látszik, kint van',url:'https://www.idealista.com/inmueble/112157450/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
  {id:'109456023',lat:41.3576156,lon:2.1064744,title:'Zona del Mig',size:'576 m²',rent:'3 000 €/hó',deposit:'2 havi kaució',sqm:'5,21 €/m²',positive:'nagy, alsó szinten (300 nm) nagyobb belmagasság',negative:'ipari park, több szint-darabolt',url:'https://www.idealista.com/inmueble/109456023/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
  {id:'111467971',lat:41.3835844,lon:2.1378523,title:"Calle d'Evarist Arnús",size:'375 m²',rent:'2 600 €/hó',deposit:'kaució nincs megadva',sqm:'6,93 €/m²',positive:'jó állapot',negative:'két szint, nem túl nagy',url:'https://www.idealista.com/inmueble/111467971/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
  {id:'111879347',lat:41.3831325,lon:2.1302175,title:'Calle de Can Bruixa',size:'500 m²',rent:'3 500 €/hó',deposit:'kaució nincs megadva',sqm:'7,00 €/m²',positive:'nagy, elvileg jó környék, galéria 100 nm',negative:'kis belmagasság, valszeg lakóház alja',url:'https://www.idealista.com/inmueble/111879347/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
- {id:'112137148',lat:41.4353152,lon:2.1980783,title:"Torrent de l'Estadella",size:'413 m²',rent:'4 200 €/hó',deposit:'kaució nincs megadva',sqm:'10,17 €/m²',positive:'különálló épület, nagy belmagasság, galéria is',negative:'nem olcsó, ipari résznél lehet',url:'https://www.idealista.com/inmueble/112137148/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'},
+ {id:'112137148',lat:41.4353152,lon:2.1980783,title:"⭐ KIEMELT – Torrent de l'Estadella",featured:true,size:'413 m²',rent:'4 200 €/hó',deposit:'kaució nincs megadva',sqm:'10,17 €/m²',positive:'különálló épület, nagy belmagasság, galéria is',negative:'nem olcsó, ipari résznél lehet',url:'https://www.idealista.com/inmueble/112137148/?utm_medium=socialmedia&utm_campaign=private_sendadpicturetofriend&utm_source=notifications'},
  {id:'112090989',lat:41.357302,lon:2.1090373,title:'Calle del Cobalt',size:'380 m²',rent:'2 750 €/hó',deposit:'kaució nincs megadva',sqm:'7,24 €/m²',positive:'nem drága, nagy belmagasság, külön épület',negative:'nem túl nagy, ipari parknak tűnik, kérdés a parkolás',url:'https://www.idealista.com/inmueble/112090989/?utm_medium=socialmedia&utm_campaign=private_sendadtofriend&utm_source=notifications'}
 ]
 
@@ -315,9 +325,9 @@ listings.forEach(x=>{
  const m=L.marker([x.lat,x.lon],{
    icon:L.divIcon({
      className:'',
-     html:'<div class="property-marker" title="Normál ingatlan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2v8.3a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.3Z" fill="#fff"/><path d="M9 21v-6h6v6" fill="#f59e0b"/></svg></div>',
-     iconSize:[24,24],
-     iconAnchor:[12,12],
+     html:'<div class="property-marker'+(x.featured?' featured':'')+'" title="'+(x.featured?'Kiemelt ingatlan':'Normál ingatlan')+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2v8.3a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-8.3Z" fill="#fff"/><path d="M9 21v-6h6v6" fill="'+(x.featured?'#b02a83':'#f59e0b')+'"/></svg></div>',
+     iconSize:x.featured?[28,28]:[24,24],
+     iconAnchor:x.featured?[14,14]:[12,12],
      popupAnchor:[0,-14]
    })
  }).addTo(map);
