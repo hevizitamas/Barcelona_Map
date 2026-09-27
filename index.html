@@ -59,6 +59,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
  height:13px;
  display:block;
 }
+.gym-marker{
+ width:22px;
+ height:22px;
+ border-radius:5px;
+ background:#111;
+ border:1.5px solid #fff;
+ box-shadow:0 1px 5px rgba(0,0,0,.45);
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ box-sizing:border-box;
+}
+.gym-marker svg{width:14px;height:14px;display:block;}
 .property-marker.featured{
  width:28px;
  height:28px;
@@ -88,6 +101,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
  white-space:nowrap
 }
 .full-list-button:hover{background:#f4f4f4}
+.leaflet-top.leaflet-right .leaflet-control{float:left;clear:none;margin-left:8px}
+.leaflet-top.leaflet-right .leaflet-control:first-child{margin-left:10px}
 .full-list-panel{
  position:fixed;
  z-index:10000;
@@ -147,6 +162,8 @@ const listings=[
 ]
 
 const palette=['#b9dff0','#ead7b7','#c9e3c0','#f2d39b','#d9c8e8','#f0c7c7','#c5ddd9','#e2d7b8','#cbd6ec','#d8e8d0','#c8e2df','#ead1df','#d8e3c1','#f1d5c6','#d4d8ed'];
+const gyms=[{"id":"gym-crossfit-eixample","name":"CrossFit Eixample","lat":41.3882,"lon":2.1817,"address":"Passeig de Lluís Companys 12"},{"id":"gym-crossfit-diagonal","name":"CrossFit Diagonal","lat":41.391,"lon":2.1591,"address":"Carrer de València 236"},{"id":"gym-kor-les-corts","name":"KOR CrossFit Les Corts","lat":41.3826,"lon":2.134,"address":"Carrer Maria Barrientos 16"},{"id":"gym-kor-arc","name":"KOR CrossFit Arc de Triomf","lat":41.392,"lon":2.1805,"address":"Carrer de Ribes 25"},{"id":"gym-condal","name":"Condal CrossFit","lat":41.405,"lon":2.201,"address":"Carrer Pere IV 159"},{"id":"gym-condal-gracia","name":"Condal CrossFit Gràcia","lat":41.4058,"lon":2.161,"address":"Carrer de l'Encarnació 20"},{"id":"gym-alpha-link","name":"Alpha Link CrossFit","lat":41.402,"lon":2.17,"address":"Carrer de Roger de Flor 213"},{"id":"gym-studio-crossfit","name":"Studio CrossFit","lat":41.407,"lon":2.175,"address":"Carrer de Provença 529"},{"id":"gym-studio-nova","name":"Studio Nova CrossFit","lat":41.3847,"lon":2.156,"address":"Carrer de València 149"},{"id":"gym-hall","name":"The Hall CrossFit","lat":41.3958,"lon":2.18,"address":"Carrer Roger de Flor 87"},{"id":"gym-wezone","name":"CrossFit Wezone Monumental","lat":41.401,"lon":2.181,"address":"Gran Via de les Corts Catalanes 673"},{"id":"gym-horta","name":"CrossFit Horta / Més Salut","lat":41.4282,"lon":2.163,"address":"Carrer Dante Alighieri 6"},{"id":"gym-rst","name":"CrossFit RST Guinardó","lat":41.4187,"lon":2.1645,"address":"Carrer del Xiprer 57"},{"id":"gym-sant-andreu","name":"Sant Andreu CrossFit","lat":41.436,"lon":2.1935,"address":"Carrer del Segre 71"},{"id":"gym-kudasai","name":"CrossFit Kudasai La Sagrera","lat":41.426,"lon":2.191,"address":"Carrer de les Filipines 1B"},{"id":"gym-garage","name":"CrossFit Garage La Sagrera","lat":41.428,"lon":2.19,"address":"Passatge de Coello 11"},{"id":"gym-sant-marti","name":"CrossFit Sant Martí / GRIT","lat":41.4115,"lon":2.2075,"address":"Carrer de Cristóbal de Moura 191-193"},{"id":"gym-thf","name":"The Hub Fitness / CrossFit THF","lat":41.3995,"lon":2.1975,"address":"Carrer de Llull 105"},{"id":"gym-how","name":"how. Barcelona","lat":41.3972,"lon":2.193,"address":"Carrer de Joan d'Àustria 95"},{"id":"gym-sant-gervasi","name":"CrossFit Sant Gervasi","lat":41.406,"lon":2.1435,"address":"Carrer de Muntaner 565"},{"id":"gym-huella","name":"La Huella CrossFit Aribau","lat":41.3895,"lon":2.1555,"address":"Carrer Aribau 79"},{"id":"gym-refugio","name":"Refugio CrossFit Badal","lat":41.3745,"lon":2.132,"address":"Carrer de Carreras i Candi"},{"id":"gym-maxgrit","name":"Max Grit CrossFit Barcelona","lat":41.382,"lon":2.151,"address":"Carrer de Viladomat 152"},{"id":"gym-g93","name":"G93 Training Box","lat":41.3725,"lon":2.1415,"address":"Carrer del Príncep Jordi 9"},{"id":"gym-la-fira","name":"La Fira CrossFit Sants","lat":41.361,"lon":2.145,"address":"Passeig de la Zona Franca 222-226"},{"id":"gym-crossfit-sants","name":"CrossFit Sants","lat":41.373,"lon":2.1395,"address":"Carrer Vilardell 12-14"},{"id":"gym-boxcelona","name":"Boxcelona","lat":41.4035,"lon":2.2015,"address":"Carrer Bac de Roda 140 bis"},{"id":"gym-fabrik-sj","name":"Fabrik Training Club – Sant Joan","lat":41.3945,"lon":2.174,"address":"Passeig Sant Joan 157"},{"id":"gym-fabrik-mallorca","name":"Fabrik Training Club – Mallorca","lat":41.386,"lon":2.163,"address":"Carrer Mallorca 337"},{"id":"gym-w-hybrid","name":"W Hybrid","lat":41.397,"lon":2.1655,"address":"Carrer de Girona 177"},{"id":"gym-hybrd","name":"HYBRD Academy","lat":41.3815,"lon":2.182,"address":"Carrer de la Fusina 11"},{"id":"gym-prepnation","name":"PrepNation","lat":41.4015,"lon":2.1535,"address":"Carrer de Lluís Antúnez 1"},{"id":"gym-cem-bac","name":"CEM Bac de Roda","lat":41.4145,"lon":2.2065,"address":"Rambla Guipúscoa 25"},{"id":"gym-nova-icaria","name":"Nova Icària Sports & Fitness","lat":41.3895,"lon":2.197,"address":"Avinguda Icària 167"},{"id":"gym-redfield","name":"Redfield T&F","lat":41.3595,"lon":2.139,"address":"Carrer de l'Acer 22"},{"id":"gym-wods","name":"WODS","lat":41.3615,"lon":2.118,"address":"Carrer Saurí 39, L'Hospitalet"},{"id":"gym-travessia","name":"Travessia CrossFit Club","lat":41.3555,"lon":2.1095,"address":"Travessia Industrial 107, L'Hospitalet"},{"id":"gym-nou-barris","name":"Nou Barris Cross Training","lat":41.435,"lon":2.1745,"address":"Carrer d'Argullós 72"},{"id":"gym-core-republic","name":"Core Republic","lat":41.436,"lon":2.169,"address":"Carrer de l'Escultor Llimona 50"},{"id":"gym-high-voltage","name":"High Voltage Training BCN","lat":41.438,"lon":2.193,"address":"Plaça de Nadal 3"},{"id":"gym-la-forja","name":"La Forja BCN","lat":41.4385,"lon":2.173,"address":"Carrer de Santapau 51"},{"id":"gym-functional-lab","name":"Functional Lab Gracia","lat":41.405,"lon":2.159,"address":"Carrer de Bretón de los Herreros 22"},{"id":"gym-tuluka","name":"Tuluka Fitness Club","lat":41.4025,"lon":2.199,"address":"Carrer de Llull 211"}];
+
 
 function pointInPolygon(point,vs){
  const y=point[0],x=point[1]; let inside=false;
@@ -379,6 +396,43 @@ fullListControl.onAdd=function(){
  return div;
 };
 fullListControl.addTo(map);
+
+let gymsVisible=true;
+const gymLayer=L.layerGroup();
+
+const skullSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c-4.7 0-8.2 3.4-8.2 7.9 0 3.1 1.7 5.5 4.2 6.7V21h8v-3.2c2.5-1.2 4.2-3.6 4.2-6.7 0-4.5-3.5-7.9-8.2-7.9Z" fill="#fff"/><circle cx="8.8" cy="11" r="1.5" fill="#111"/><circle cx="15.2" cy="11" r="1.5" fill="#111"/><path d="M9 15h6v3H9z" fill="#111"/><path d="M10 15v3M12 15v3M14 15v3" stroke="#fff" stroke-width="1"/></svg>';
+
+gyms.forEach(g=>{
+ const m=L.marker([g.lat,g.lon],{
+   icon:L.divIcon({
+     className:'',
+     html:'<div class="gym-marker" title="Meglévő terem">'+skullSvg+'</div>',
+     iconSize:[22,22],
+     iconAnchor:[11,11],
+     popupAnchor:[0,-13]
+   })
+ }).bindPopup('<div class="name">'+g.name+'</div><div class="item">'+g.address+'</div>');
+ gymLayer.addLayer(m);
+});
+gymLayer.addTo(map);
+
+const gymVisibilityControl=L.control({position:'topright'});
+gymVisibilityControl.onAdd=function(){
+ const div=L.DomUtil.create('div','full-list-control');
+ const btn=L.DomUtil.create('button','full-list-button',div);
+ btn.type='button';
+ btn.textContent='MEGLÉVŐ TERMek'.toUpperCase();
+ btn.title='Meglévő CrossFit / Hyrox / hybrid / funkcionális termek megjelenítése vagy elrejtése';
+ L.DomEvent.disableClickPropagation(div);
+ L.DomEvent.on(btn,'click',()=>{
+   gymsVisible=!gymsVisible;
+   if(gymsVisible) gymLayer.addTo(map);
+   else map.removeLayer(gymLayer);
+   btn.textContent=gymsVisible?'MEGLÉVŐ TERMEK':'MEGLÉVŐ TERMEK';
+ });
+ return div;
+};
+gymVisibilityControl.addTo(map);
 
 document.addEventListener('click',e=>{
  const panel=document.getElementById('fullListPanel');
